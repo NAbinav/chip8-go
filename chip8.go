@@ -17,4 +17,9 @@ type Chip8 struct {
 	Stack      [16]uint16
 	SP         uint8
 	Key        [16]bool
+	table      [16]func()
+	table0     [16]func()
+	table8     [16]func()
+	tableE     [16]func()
+	tableF     [256]func()
 }

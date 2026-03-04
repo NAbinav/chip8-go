@@ -26,5 +26,66 @@ func (c *Chip8) Init() {
 	for i := range 80 {
 		c.Memory[0x50+i] = fontset[i]
 	}
+	//from this to line 74 written by AI (cant do manual work
+	c.table[0x0] = c.Table0
+	c.table[0x1] = c.OP_1NNN
+	c.table[0x2] = c.OP_2NNN
+	c.table[0x3] = c.OP_3xkk
+	c.table[0x4] = c.OP_4xkk
+	c.table[0x5] = c.OP_5xy0
+	c.table[0x6] = c.OP_6xkk
+	c.table[0x7] = c.OP_7xkk
+	c.table[0x8] = c.Table8
+	c.table[0x9] = c.OP_9xy0
+	c.table[0xA] = c.OP_ANNN
+	c.table[0xB] = c.OP_BNNN
+	c.table[0xC] = c.OP_Cxkk
+	c.table[0xD] = c.OP_Dxyn
+	c.table[0xE] = c.TableE
+	c.table[0xF] = c.TableF
+	for i := range 16 {
+		c.table0[i] = c.OP_NULL
+		c.table8[i] = c.OP_NULL
+		c.tableE[i] = c.OP_NULL
+	}
+	for i := range 256 {
+		c.tableF[i] = c.OP_NULL
+	}
+	c.table8[0x0] = c.OP_8xy0
+	c.table8[0x1] = c.OP_8xy1
+	c.table8[0x2] = c.OP_8xy2
+	c.table8[0x3] = c.OP_8xy3
+	c.table8[0x4] = c.OP_8xy4
+	c.table8[0x5] = c.OP_8xy5
+	c.table8[0x6] = c.OP_8xy6
+	c.table8[0x7] = c.OP_8xy7
+	c.table8[0xE] = c.OP_8xyE
+	c.tableE[0x1] = c.OP_ExA1
+	c.tableE[0xE] = c.OP_Ex9E
+	c.tableF[0x07] = c.OP_Fx07
+	c.tableF[0x0A] = c.OP_Fx0A
+	c.tableF[0x15] = c.OP_Fx15
+	c.tableF[0x18] = c.OP_Fx18
+	c.tableF[0x1E] = c.OP_Fx1E
+	c.tableF[0x29] = c.OP_Fx29
+	c.tableF[0x33] = c.OP_Fx33
+	c.tableF[0x55] = c.OP_Fx55
+	c.tableF[0x65] = c.OP_Fx65
 
+}
+func (c *Chip8) Table0() {
+	c.table0[c.Opcode&0x000F]()
+}
+func (c *Chip8) Table8() {
+	c.table8[c.Opcode&0x000F]()
+}
+func (c *Chip8) TableE() {
+	c.tableE[c.Opcode&0x000F]()
+}
+
+func (c *Chip8) TableF() {
+	c.tableF[c.Opcode&0x00FF]()
+}
+func (c *Chip8) OP_NULL() {
+	panic("Unknown opcode")
 }

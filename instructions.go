@@ -252,13 +252,13 @@ func (c *Chip8) OP_Fx0A() {
 
 // Fx15 - LD DT, Vx
 
-func (c *Chip8) OP_FX15() {
+func (c *Chip8) OP_Fx15() {
 	vx := (c.Opcode & 0x0F00) >> 8
 	c.DelayTimer = c.V[vx]
 }
 
 // Fx18 - LD ST, Vx
-func (c *Chip8) OP_FX18() {
+func (c *Chip8) OP_Fx18() {
 	vx := (c.Opcode & 0x0F00) >> 8
 	c.SoundTimer = c.V[vx]
 }
