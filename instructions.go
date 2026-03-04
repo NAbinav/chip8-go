@@ -189,10 +189,10 @@ func (c *Chip8) OP_Dxyn() {
 	x := c.V[vx] % 64
 	y := c.V[vy] % 32
 	c.V[0xF] = 0
-	for row := uint16(0); row < h; row++ {
+	for row := range h {
 		pix := c.Memory[c.I+row]
 
-		for col := uint16(0); col < 8; col++ {
+		for col := range 8 {
 			if (pix & (0x80 >> col)) != 0 {
 				x := (x + uint8(col)) % 64
 				y := (y + uint8(row)) % 32
@@ -214,18 +214,92 @@ func (c *Chip8) OP_Ex9E() {
 
 	vx := (c.Opcode & 0x0F00) >> 8
 	if c.Key[c.V[vx]] {
-
+		c.PC += 2
 	}
+}
+
+// ExA1 - SKNP Vx
+func (c *Chip8) OP_ExA1() {
+
+	vx := (c.Opcode & 0x0F00) >> 8
+	if !c.Key[c.V[vx]] {
+		c.PC += 2
+	}
+}
+
+// Fx07 - LD Vx, DT
+// set vx as timer
+func (c *Chip8) OP_Fx07() {
+	vx := (c.Opcode & 0x0F00) >> 8
+	c.V[vx] = c.DelayTimer
+}
+
+// Fx0A - LD Vx, K
+func (c *Chip8) OP_Fx0A() {
+	vx := (c.Opcode & 0x0F00) >> 8
+	keyPressed := false
+	for i := range 16 {
+		if c.Key[i] {
+			c.V[vx] = byte(i)
+			keyPressed = true
+			break
+		}
+	}
+	if !keyPressed {
+		c.PC -= 2
+	}
+}
+
+// Fx15 - LD DT, Vx
+
+func (c *Chip8) OP_FX15() {
+	vx := (c.Opcode & 0x0F00) >> 8
+	c.DelayTimer = c.V[vx]
+}
+
+// Fx18 - LD ST, Vx
+func (c *Chip8) OP_FX18() {
+	vx := (c.Opcode & 0x0F00) >> 8
+	c.SoundTimer = c.V[vx]
+}
+
+// Fx1E - ADD I, Vx
+func (c *Chip8) OP_Fx1E() {
+	vx := (c.Opcode & 0x0F00) >> 8
+	c.I += uint16(c.V[vx])
+}
+
+// Fx29 - LD F, Vx
+func (c *Chip8) OP_Fx29() {
+	vx := (c.Opcode & 0x0F00) >> 8
+	c.I = 0x50 + 5*uint16(c.V[vx])
+}
+
+// Fx33 - LD B, Vx
+// Store BCD representation of Vx in memory locations I, I+1, and I+2.
+func (c *Chip8) OP_Fx33() {
+	vx := (c.Opcode & 0x0F00) >> 8
+	val := c.V[vx]
+	c.Memory[c.I+2] = val % 10
+	val /= 10
+	c.Memory[c.I+1] = val % 10
+	val /= 10
+	c.Memory[c.I] = val % 10
 
 }
 
-//            ExA1 - SKNP Vx
-//            Fx07 - LD Vx, DT
-//            Fx0A - LD Vx, K
-//            Fx15 - LD DT, Vx
-//            Fx18 - LD ST, Vx
-//            Fx1E - ADD I, Vx
-//            Fx29 - LD F, Vx
-//            Fx33 - LD B, Vx
-//            Fx55 - LD [I], Vx
-//            Fx65 - LD Vx, [I]
+// Fx55 - LD [I], Vx
+func (c *Chip8) OP_Fx55() {
+	x := (c.Opcode & 0x0F00) >> 8
+	for i := range x {
+		c.Memory[c.I+i] = c.V[i]
+	}
+}
+
+// Fx65 - LD Vx, [I]
+func (c *Chip8) OP_Fx65() {
+	x := (c.Opcode & 0x0F00) >> 8
+	for i := range x {
+		c.V[i] = c.Memory[c.I+i]
+	}
+}
