@@ -11,7 +11,7 @@ type Chip8 struct {
 	Opcode     uint16
 	I          uint16 //Index Registers
 	PC         uint16
-	Display    [64][32]bool
+	Display    [32][64]bool
 	DelayTimer byte
 	SoundTimer byte
 	Stack      [16]uint16

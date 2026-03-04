@@ -6,7 +6,7 @@ import (
 
 // 00E0 - CLS
 func (c *Chip8) OP_00E0() {
-	c.Display = [64][32]bool{}
+	c.Display = [32][64]bool{}
 }
 
 // 00EE - RET
@@ -183,27 +183,27 @@ func (c *Chip8) OP_Cxkk() {
 
 // Dxyn - DRW Vx, Vy, nibble
 func (c *Chip8) OP_Dxyn() {
-	vx := (c.Opcode & 0x0F00) >> 8
-	vy := (c.Opcode & 0x00F0) >> 4
-	h := c.Opcode & 0x000F
-	x := c.V[vx] % 64
-	y := c.V[vy] % 32
+	x := c.V[(c.Opcode&0x0F00)>>8] % 64
+	y := c.V[(c.Opcode&0x00F0)>>4] % 32
+	height := c.Opcode & 0x000F
+
 	c.V[0xF] = 0
-	for row := range h {
-		pix := c.Memory[c.I+row]
 
-		for col := range 8 {
-			if (pix & (0x80 >> col)) != 0 {
-				x := (x + uint8(col)) % 64
-				y := (y + uint8(row)) % 32
+	for row := uint16(0); row < height; row++ {
+		spriteByte := c.Memory[c.I+row]
 
-				if c.Display[x][y] {
+		for col := uint16(0); col < 8; col++ {
+			if (spriteByte & (0x80 >> col)) != 0 {
+
+				px := (uint16(x) + col) % 64
+				py := (uint16(y) + row) % 32
+
+				if c.Display[py][px] {
 					c.V[0xF] = 1
 				}
 
-				c.Display[x][y] = !c.Display[x][y]
+				c.Display[py][px] = !c.Display[py][px]
 			}
-
 		}
 	}
 }

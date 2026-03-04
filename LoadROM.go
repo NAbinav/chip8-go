@@ -19,5 +19,8 @@ func (c *Chip8) LoadROM(filename string) {
 	for i := 0x200; i < 0x200+romSize; i += 2 {
 		fmt.Printf("%x ", uint16(c.Memory[i]<<8)|uint16(c.Memory[i+1]))
 	}
+	for true {
+		c.cycle()
+	}
 
 }
