@@ -1,5 +1,9 @@
 package main
 
+import (
+	"math/rand"
+)
+
 // 00E0 - CLS
 func (c *Chip8) OP_00E0() {
 	c.Display = [64][32]bool{}
@@ -113,19 +117,108 @@ func (c *Chip8) OP_8xy5() {
 	Vy := (c.Opcode & 0x00F0) >> 4
 	if c.V[Vx] >= c.V[Vy] {
 		c.V[0xF] = 1
+	} else {
+		c.V[0xF] = 0
 	}
 	c.V[Vx] -= c.V[Vy]
 }
 
-//            8xy6 - SHR Vx {, Vy}
-//            8xy7 - SUBN Vx, Vy
-//            8xyE - SHL Vx {, Vy}
-//            9xy0 - SNE Vx, Vy
-//            Annn - LD I, addr
-//            Bnnn - JP V0, addr
-//            Cxkk - RND Vx, byte
-//            Dxyn - DRW Vx, Vy, nibble
-//            Ex9E - SKP Vx
+// 8xy6 - SHR Vx {, Vy}
+func (c *Chip8) OP_8xy6() {
+	Vx := (c.Opcode & 0x0F00) >> 8
+	c.V[0xF] = c.V[Vx] & 0x1
+	c.V[Vx] >>= 1
+}
+
+// 8xy7 - SUBN Vx, Vy
+func (c *Chip8) OP_8xy7() {
+	Vx := (c.Opcode & 0x0F00) >> 8
+	Vy := (c.Opcode & 0x00F0) >> 4
+	if c.V[Vx] < c.V[Vy] {
+		c.V[0xF] = 1
+	} else {
+		c.V[0xF] = 0
+	}
+	c.V[Vy] -= c.V[Vx]
+}
+
+// 8xyE - SHL Vx {, Vy}
+func (c *Chip8) OP_8xyE() {
+	Vx := (c.Opcode & 0x0F00) >> 8
+	c.V[0xF] = (c.V[Vx] & 0x80) >> 7
+	c.V[Vx] <<= 1
+}
+
+// 9xy0 - SNE Vx, Vy
+func (c *Chip8) OP_9xy0() {
+	Vx := (c.Opcode & 0x0F00) >> 8
+	Vy := (c.Opcode & 0x00F0) >> 4
+	if uint16(c.V[Vx]) != uint16(c.V[Vy]) {
+		c.PC += 2
+	}
+
+}
+
+// Annn - LD I, addr
+func (c *Chip8) OP_ANNN() {
+	c.I = c.Opcode & 0xFFF
+}
+
+// Bnnn - JP V0, addr
+func (c *Chip8) OP_BNNN() {
+	address := c.Opcode & 0xFFF
+	c.PC = address + uint16(c.V[0])
+}
+
+// Cxkk - RND Vx, byte
+func random() uint8 {
+	return uint8(rand.Intn(256))
+}
+
+func (c *Chip8) OP_Cxkk() {
+	vx := c.Opcode & 0x0F00 >> 8
+	val := uint8(c.Opcode & 0xFF)
+	c.V[vx] = val & uint8(random())
+}
+
+// Dxyn - DRW Vx, Vy, nibble
+func (c *Chip8) OP_Dxyn() {
+	vx := (c.Opcode & 0x0F00) >> 8
+	vy := (c.Opcode & 0x00F0) >> 4
+	h := c.Opcode & 0x000F
+	x := c.V[vx] % 64
+	y := c.V[vy] % 32
+	c.V[0xF] = 0
+	for row := uint16(0); row < h; row++ {
+		pix := c.Memory[c.I+row]
+
+		for col := uint16(0); col < 8; col++ {
+			if (pix & (0x80 >> col)) != 0 {
+				x := (x + uint8(col)) % 64
+				y := (y + uint8(row)) % 32
+
+				if c.Display[x][y] {
+					c.V[0xF] = 1
+				}
+
+				c.Display[x][y] = !c.Display[x][y]
+			}
+
+		}
+	}
+}
+
+// Ex9E - SKP Vx
+// Skip next instruction if key with the value of Vx is pressed.
+func (c *Chip8) OP_Ex9E() {
+
+	vx := (c.Opcode & 0x0F00) >> 8
+	if c.Key[c.V[vx]] {
+
+	}
+
+}
+
 //            ExA1 - SKNP Vx
 //            Fx07 - LD Vx, DT
 //            Fx0A - LD Vx, K

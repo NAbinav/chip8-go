@@ -16,5 +16,5 @@ type Chip8 struct {
 	SoundTimer byte
 	Stack      [16]uint16
 	SP         uint8
-	Key        [16]byte
+	Key        [16]bool
 }
