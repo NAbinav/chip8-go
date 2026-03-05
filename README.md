@@ -2,8 +2,12 @@
 
 Another CHIP-8 emulator implemented in Go.
 
+
 ## Demo:
-  [https://github.com/NAbinav/chip8-go/blob/main/demo.mp4] 
+
+<video src="https://github.com/NAbinav/chip8-go/raw/main/demo.mp4" controls>
+  Your browser doesn't support video.
+</video>
 
 # Controls:
 
