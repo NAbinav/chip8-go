@@ -31,3 +31,4 @@ go.work.sum
 # .idea/
 # .vscode/
 *.ch8
+!Brix.ch8
