@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/audio"
 	"image/color"
 )
 
@@ -12,13 +13,25 @@ var white = color.RGBA{255, 255, 255, 255}
 const scale = 10
 
 type Game struct {
-	chip8 *Chip8
+	chip8  *Chip8
+	player *audio.Player
 }
 
 func (g *Game) Update() error {
 	handleInput(g.chip8)
-	for i := 0; i < 30; i++ {
+	for i := 0; i < 10; i++ {
 		g.chip8.cycle()
+	}
+	if g.chip8.DelayTimer > 0 {
+		g.chip8.DelayTimer--
+	}
+	if g.chip8.SoundTimer > 0 {
+		g.chip8.SoundTimer--
+	}
+	if g.chip8.SoundTimer > 0 && !g.player.IsPlaying() {
+		g.player.Play()
+	} else if g.chip8.SoundTimer == 0 && g.player.IsPlaying() {
+		g.player.Pause()
 	}
 	return nil
 }
@@ -45,9 +58,10 @@ func (g *Game) Layout(w, h int) (int, int) {
 func main() {
 	chip := &Chip8{}
 	chip.Init()
-	chip.LoadROM("./spaceracer.ch8")
+	chip.LoadROM("./Brix.ch8")
 
-	game := &Game{chip8: chip}
+	player, _ := audio.NewContext(sampleRate).NewPlayer(&beep{})
+	game := &Game{chip8: chip, player: player}
 
 	ebiten.SetWindowSize(64*scale, 32*scale)
 	ebiten.SetWindowTitle("CHIP-8")

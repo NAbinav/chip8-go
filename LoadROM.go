@@ -15,3 +15,5 @@ func (c *Chip8) LoadROM(filename string) {
 	}
 
 }
+
+// TODO: Embed the ROM file so that it is easy to load in browser when covnerted to wasm
