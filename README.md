@@ -2,6 +2,9 @@
 
 Another CHIP-8 emulator implemented in Go.
 
+## Demo:
+  [https://github.com/NAbinav/chip8-go/blob/main/demo.mp4] 
+
 # Controls:
 
 **CHIP-8 Keypad:**
