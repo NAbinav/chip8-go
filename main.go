@@ -17,17 +17,22 @@ type Game struct {
 
 func (g *Game) Update() error {
 	handleInput(g.chip8)
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 30; i++ {
 		g.chip8.cycle()
 	}
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
+	screen.Fill(color.Black)
 	for y := 0; y < 32; y++ {
 		for x := 0; x < 64; x++ {
 			if g.chip8.Display[y][x] {
-				screen.Set(x*scale, y*scale, white)
+				for dy := 0; dy < scale; dy++ {
+					for dx := 0; dx < scale; dx++ {
+						screen.Set(x*scale+dx, y*scale+dy, white)
+					}
+				}
 			}
 		}
 	}
@@ -40,7 +45,7 @@ func (g *Game) Layout(w, h int) (int, int) {
 func main() {
 	chip := &Chip8{}
 	chip.Init()
-	chip.LoadROM("./Pong.ch8")
+	chip.LoadROM("./spaceracer.ch8")
 
 	game := &Game{chip8: chip}
 
@@ -53,7 +58,6 @@ func main() {
 }
 
 func handleInput(c *Chip8) {
-
 	keys := map[ebiten.Key]byte{
 		ebiten.Key1: 0x1,
 		ebiten.Key2: 0x2,

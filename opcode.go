@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"time"
-)
+import "fmt"
 
 func (c *Chip8) cycle() {
 	// Fetch
@@ -15,8 +12,8 @@ func (c *Chip8) cycle() {
 
 	// Decode & Execute
 	c.table[(c.Opcode&0xF000)>>12]()
-	time.Sleep(time.Second / 24)
 }
+
 func (c *Chip8) PrintDisplay() {
 	fmt.Print("\033[H")
 	for y := range 32 {
