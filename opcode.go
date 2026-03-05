@@ -15,7 +15,6 @@ func (c *Chip8) cycle() {
 
 	// Decode & Execute
 	c.table[(c.Opcode&0xF000)>>12]()
-	c.PrintDisplay()
 	time.Sleep(time.Second / 24)
 }
 func (c *Chip8) PrintDisplay() {

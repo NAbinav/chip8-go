@@ -5,7 +5,7 @@ func (c *Chip8) Init() {
 	c.Opcode = 0
 	c.I = 0
 	c.SP = 0
-	//source: https://austinmorlan.com/posts/chip8_emulator/
+	//source: https://austinmorlan.com/posts/chip8_emulator/ for fontset
 	fontset := [80]byte{
 		0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
 		0x20, 0x60, 0x20, 0x20, 0x70, // 1
